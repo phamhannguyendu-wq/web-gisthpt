@@ -250,6 +250,7 @@ with col1:
         rank = row['Xep_Hang']
         color = color_map[rank]
         radius = 14 if rank in ["Top 1", "Top 2", "Top 3"] else 6
+        web_url = str(row['Website_Truong']) if pd.notnull(row['Website_Truong']) else "#"
         
         popup_html = f"""
         <div style='font-family: Arial; width: 240px;'>
@@ -259,7 +260,8 @@ with col1:
             <b>Điểm chuẩn 2026:</b> {row['Diem_Chuan_2026']} điểm<br>
             <b>Khoảng cách:</b> {row['Khoang_Cach_km']} km<br>
             <b>Bán trú:</b> {row['Ban_Tru']}<br>
-            <b>Độ tương thích AHP 7 TC (S_i):</b> <b style='color:red; font-size: 15px;'>{row['Diem_S_i']} / 10</b>
+            <b>Độ tương thích AHP (S_i):</b> <b style='color:red; font-size: 14px;'>{row['Diem_S_i']} / 10</b><br>
+            🌐 <a href='{web_url}' target='_blank' style='color:#2563EB; font-weight:bold;'>Truy cập website trường</a>
         </div>
         """
         
@@ -284,6 +286,7 @@ with col2:
     for idx, row in top_3.iterrows():
         rank = row['Xep_Hang']
         badge_color = "🟢" if rank == "Top 1" else ("🔵" if rank == "Top 2" else "🟠")
+        web_url = str(row['Website_Truong']) if pd.notnull(row['Website_Truong']) else ""
         
         with st.expander(f"{badge_color} {rank}: {row['Ten_Truong']}", expanded=True):
             st.markdown(f"* **Điểm tương thích AHP 7 tiêu chí:** <b style='color:red; font-size:16px;'>{row['Diem_S_i']} / 10</b>", unsafe_allow_html=True)
@@ -292,6 +295,8 @@ with col2:
             st.write(f"* **Loại hình & Bán trú:** {row['Loai_Hinh']} | Bán trú: {row['Ban_Tru']}")
             st.write(f"* **CLB nổi bật:** {row['CLB_Noi_Bat']}")
             st.write(f"* **Địa chỉ:** {row['Dia_Chi']}")
+            if web_url and web_url != "nan" and web_url != "#":
+                st.markdown(f"* **Website chính thức:** 🌐 [{web_url}]({web_url})")
 
 st.divider()
 
@@ -300,6 +305,12 @@ st.divider()
 # -----------------------------------------------------------------------------
 st.subheader("📊 Bảng Chi Tiết Kết Quả Đánh Giá 7 Tiêu Chí AHP (46 Trường THPT)")
 st.dataframe(
-    df_truong[['Xep_Hang', 'Ten_Truong', 'Loai_Hinh', 'Diem_Chuan_2026', 'Khoang_Cach_km', 'Ban_Tru', 'Diem_S_i']],
+    df_truong[['Xep_Hang', 'Ten_Truong', 'Loai_Hinh', 'Diem_Chuan_2026', 'Khoang_Cach_km', 'Ban_Tru', 'Diem_S_i', 'Website_Truong']],
+    column_config={
+        "Website_Truong": st.column_config.LinkColumn(
+            "Website chính thức",
+            display_text="🌐 Link Website"
+        )
+    },
     use_container_width=True
 )
