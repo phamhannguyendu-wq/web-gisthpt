@@ -366,3 +366,32 @@ st.dataframe(
     },
     use_container_width=True
 )
+# NỔI BẬT RANH GIỚI HÀNH CHÍNH PHƯỜNG HÒA HƯNG (QUẬN 10)
+hoahung_polygon = [
+    [10.7865, 106.6605],  # Ngã tư Bắc Hải - Cách Mạng Tháng Tám
+    [10.7885, 106.6685],  # Cư xá Bắc Hải - Công viên Lê Thị Riêng
+    [10.7825, 106.6745],  # Đường CMT8 - Tô Hiến Thành
+    [10.7725, 106.6725],  # Vòng xoay Dân Chủ (Đường 3/2 - CMT8)
+    [10.7680, 106.6625],  # Đường 3/2 - Thành Thái
+    [10.7735, 106.6565],  # Đường Lý Thường Kiệt - Tô Hiến Thành
+    [10.7865, 106.6605],  # Khép kín polygon
+]
+
+folium.Polygon(
+    locations=hoahung_polygon,
+    color="#2563EB",  # Đường viền màu Xanh dương đậm
+    weight=3.5,  # Độ dày đường viền
+    dash_array="6, 6",  # Nét đứt nổi bật
+    fill=True,
+    fill_color="#3B82F6",  # Phủ màu xanh nhạt
+    fill_opacity=0.18,  # Lớp phủ mờ nhẹ
+    popup=folium.Popup(
+        "<b>🏛️ RANH GIỚI HÀNH CHÍNH PHƯỜNG HÒA HƯNG (MỚI SÁP NHẬP)</b><br>"
+        "<hr style='margin:3px 0;'>"
+        "<b>Đơn vị sáp nhập:</b> Phường 12, 13, 15 & 14 (cũ)<br>"
+        "<b>Diện tích:</b> ~2.54 km² | <b>Dân số:</b> ~157.865 người<br>"
+        "<i>Vùng địa bàn nghiên cứu trung tâm đề tài NCKH 2026</i>",
+        max_width=280,
+    ),
+    tooltip="📍 Ranh giới Hành chính Phường Hòa Hưng (Quận 10)",
+).add_to(m)
