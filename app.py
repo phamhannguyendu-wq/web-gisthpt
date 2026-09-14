@@ -43,65 +43,73 @@ except Exception as e:
     st.stop()
 
 # -----------------------------------------------------------------------------
-# 3. Sidebar Nhập liệu Cá nhân hóa Đầy đủ 7 Tiêu chí AHP
+# 3. Sidebar Form Nhập liệu Cá nhân hóa 7 Tiêu chí + Nút bấm "TƯ VẤN"
 # -----------------------------------------------------------------------------
-st.sidebar.header("⚙️ Cấu Hình Hồ Sơ & Nhu Cầu 7 Tiêu Chí")
+with st.sidebar.form(key="tu_van_form"):
+    st.header("⚙️ Cấu Hình Hồ Sơ & Nhu Cầu 7 Tiêu Chí")
 
-# Tiêu chí 1: Khả năng trúng tuyển (14.39%)
-st.sidebar.subheader("1. 🎯 Khả năng trúng tuyển")
-diem_du_kien = st.sidebar.number_input(
-    "Điểm thi tuyển sinh dự kiến:", 
-    min_value=0.0, max_value=30.0, value=21.0, step=0.25
-)
+    # Tiêu chí 1: Khả năng trúng tuyển (14.39%)
+    st.subheader("1. 🎯 Khả năng trúng tuyển")
+    diem_du_kien = st.number_input(
+        "Điểm thi tuyển sinh dự kiến:", 
+        min_value=0.0, max_value=30.0, value=21.0, step=0.25
+    )
 
-# Tiêu chí 2: Vị trí & Khả năng di chuyển (13.77%)
-st.sidebar.subheader("2. 📍 Vị trí & Di chuyển")
-dia_chi_nha = st.sidebar.text_input(
-    "Địa chỉ nhà chính xác:", 
-    value="285 Cách Mạng Tháng Tám, Phường Hòa Hưng, Quận 10, TP.HCM"
-)
-ban_kinh_max = st.sidebar.slider("Bán kính đi học tối đa chấp nhận (km):", 2.0, 15.0, 10.0, 0.5)
+    # Tiêu chí 2: Vị trí & Khả năng di chuyển (13.77%)
+    st.subheader("2. 📍 Vị trí & Di chuyển")
+    dia_chi_nha = st.text_input(
+        "Địa chỉ nhà chính xác:", 
+        value="285 Cách Mạng Tháng Tám, Phường Hòa Hưng, Quận 10, TP.HCM"
+    )
+    ban_kinh_max = st.slider("Bán kính đi học tối đa chấp nhận (km):", 2.0, 15.0, 10.0, 0.5)
 
-# Tiêu chí 3: Định hướng học tập (Tổ hợp môn GDPT 2018) (14.49%)
-st.sidebar.subheader("3. 📚 Định hướng Tổ hợp môn")
-mon_luat_chon = st.sidebar.multiselect(
-    "Môn học tự chọn ưu tiên:",
-    options=["Vật lý", "Hóa học", "Sinh học", "Tin học", "Địa lý", "GDKT&PL", "Mỹ thuật", "Công nghệ"],
-    default=["Vật lý", "Hóa học", "Tin học"]
-)
+    # Tiêu chí 3: Định hướng học tập (Tổ hợp môn GDPT 2018) (14.49%)
+    st.subheader("3. 📚 Định hướng Tổ hợp môn")
+    mon_luat_chon = st.multiselect(
+        "Môn học tự chọn ưu tiên:",
+        options=["Vật lý", "Hóa học", "Sinh học", "Tin học", "Địa lý", "GDKT&PL", "Mỹ thuật", "Công nghệ"],
+        default=["Vật lý", "Hóa học", "Tin học"]
+    )
 
-# Tiêu chí 4: Mô hình học tập (Bán trú) (12.84%)
-st.sidebar.subheader("4. 🛌 Mô hình Bán trú")
-ban_tru_req = st.sidebar.radio(
-    "Nhu cầu dịch vụ bán trú:", 
-    options=["Cần bán trú", "Không cần bán trú"], index=0
-)
+    # Tiêu chí 4: Mô hình học tập (Bán trú) (12.84%)
+    st.subheader("4. 🛌 Mô hình Bán trú")
+    ban_tru_req = st.radio(
+        "Nhu cầu dịch vụ bán trú:", 
+        options=["Cần bán trú", "Không cần bán trú"], index=0
+    )
 
-# Tiêu chí 5: Tài chính / Học phí (13.96%)
-st.sidebar.subheader("5. 💰 Điều kiện Tài chính")
-loai_hinh_pref = st.sidebar.selectbox(
-    "Loại hình trường ưu tiên:", 
-    options=["Tất cả", "Công lập", "Tư thục"]
-)
-hoc_phi_max = st.sidebar.number_input(
-    "Mức học phí tối đa chi trả (VNĐ/tháng):", 
-    min_value=1000000, max_value=20000000, value=3000000, step=500000
-)
+    # Tiêu chí 5: Tài chính / Học phí (13.96%)
+    st.subheader("5. 💰 Điều kiện Tài chính")
+    loai_hinh_pref = st.selectbox(
+        "Loại hình trường ưu tiên:", 
+        options=["Tất cả", "Công lập", "Tư thục"]
+    )
+    hoc_phi_max = st.number_input(
+        "Mức học phí tối đa chi trả (VNĐ/tháng):", 
+        min_value=1000000, max_value=20000000, value=3000000, step=500000
+    )
 
-# Tiêu chí 6: Môi trường & Cơ sở vật chất (15.15%)
-st.sidebar.subheader("6. 🏫 Môi trường & CSVC")
-hoc_2_buoi_req = st.sidebar.selectbox(
-    "Nhu cầu học 2 buổi/ngày:",
-    options=["Bắt buộc có", "Không bắt buộc"]
-)
+    # Tiêu chí 6: Môi trường & Cơ sở vật chất (15.15%)
+    st.subheader("6. 🏫 Môi trường & CSVC")
+    hoc_2_buoi_req = st.selectbox(
+        "Nhu cầu học 2 buổi/ngày:",
+        options=["Bắt buộc có", "Không bắt buộc"]
+    )
 
-# Tiêu chí 7: Chất lượng đào tạo & CLB Ngoại khóa (15.40%)
-st.sidebar.subheader("7. 🏆 Chất lượng & CLB Ngoại khóa")
-clb_yeu_thich = st.sidebar.multiselect(
-    "Lĩnh vực Câu lạc bộ yêu thích:",
-    options=["Truyền thông", "Nghệ thuật", "Nhảy hiện đại", "Thể thao", "Học thuật", "STEM"],
-    default=["Truyền thông", "Thể thao"]
-)
+    # Tiêu chí 7: Chất lượng đào tạo & CLB Ngoại khóa (15.40%)
+    st.subheader("7. 🏆 Chất lượng & CLB Ngoại khóa")
+    clb_yeu_thich = st.multiselect(
+        "Lĩnh vực Câu lạc bộ yêu thích:",
+        options=["Truyền thông", "Nghệ thuật", "Nhảy hiện đại", "Thể thao", "Học thuật", "STEM"],
+        default=["Truyền thông", "Thể thao"]
+    )
+
+    # NÚT TƯ VẤN CHÍNH THỨC
+    btn_submit = st.form_submit_button(
+        label="🔍 TƯ VẤN CHỌN TRƯỜNG PHÙ HỢP", 
+        use_container_width=True,
+        type="primary"
+    )
 
 # -----------------------------------------------------------------------------
 # 4. Geocoding & Thuật toán Tính khoảng cách di chuyển thực tế
@@ -130,7 +138,6 @@ def calculate_distance(lat1, lon1, lat2, lon2):
 # -----------------------------------------------------------------------------
 # 5. Thuật toán Chuẩn hóa Đủ 7 Tiêu chí & Tính điểm Tương thích AHP (S_i)
 # -----------------------------------------------------------------------------
-# Ma trận trọng số AHP chính xác từ PDF kiểm định (CR = 0.0 < 0.1)
 W_AHP = {
     'c1_cl_daotao': 0.154,       # 15.40%
     'c2_csvc': 0.152,            # 15.15%
@@ -165,7 +172,6 @@ for idx, row in df_truong.iterrows():
         c2 = 10.0 if row['Hoc_2_Buoi'] == "Có" else 7.0
         
     # c3: Định hướng học tập (Tổ hợp môn GDPT 2018)
-    to_hop_str = str(row['CLB_Noi_Bat']) + " " + str(row['Ten_Truong'])  # Dữ liệu mô tả môn
     c3 = 10.0  # Mặc định đạt chuẩn chương trình GDPT 2018
     
     # c4: Khả năng trúng tuyển (So sánh với điểm thi dự kiến)
