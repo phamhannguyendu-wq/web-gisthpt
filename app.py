@@ -360,3 +360,37 @@ st.dataframe(
     },
     use_container_width=True
 )
+from folium.plugins import Fullscreen  # 1. Thêm thư viện Fullscreen
+
+# -----------------------------------------------------------------------------
+# 7. Giao diện Hiển thị Bản đồ & Bảng kết quả Đề xuất Top 3
+# -----------------------------------------------------------------------------
+col1, col2 = st.columns([1.6, 1.0])  # Mở rộng cột bản đồ lớn hơn (1.6 so với 1.0)
+
+with col1:
+    st.subheader("🗺️ Bản đồ Không gian Trực quan Web-GIS")
+    st.caption("💡 *Mẹo: Bấm vào biểu tượng ⛶ (góc trên bên trái bản đồ) để phóng to toàn màn hình.*")
+    
+    # Tạo bản đồ Folium
+    m = folium.Map(location=[lat_user, lon_user], zoom_start=14, tiles="OpenStreetMap")
+    
+    # 2. BỔ SUNG NÚT PHÓNG TO TOÀN MÀN HÌNH (FULLSCREEN)
+    Fullscreen(
+        position="topleft",
+        title="Phóng toàn màn hình",
+        title_cancel="Thoát toàn màn hình",
+        force_separate_button=True
+    ).add_to(m)
+    
+    # Ghim vị trí nhà học sinh
+    folium.Marker(
+        [lat_user, lon_user],
+        popup=f"<b>🏠 Vị trí nhà học sinh:</b><br>{dia_chi_nha}",
+        icon=folium.Icon(color="red", icon="home", prefix="fa")
+    ).add_to(m)
+    
+    # Vẽ các trường THPT (giữ nguyên logic cũ)
+    # ... [các đoạn code vẽ CircleMarker] ...
+    
+    # 3. TĂNG KÍCH THƯỚC BẢN ĐỒ VỚI HEIGHT=680 VÀ USE_CONTAINER_WIDTH=TRUE
+    st_folium(m, height=680, use_container_width=True)
