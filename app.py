@@ -2,6 +2,7 @@ import pandas as pd
 import streamlit as st
 import folium
 from streamlit_folium import st_folium
+from folium.plugins import Fullscreen
 from geopy.geocoders import Nominatim
 import math
 
@@ -117,7 +118,7 @@ with st.sidebar.form(key="tu_van_form"):
 @st.cache_data
 def geocode_address(address):
     try:
-        geolocator = Nominatim(user_agent="webgis_school_advisor_hoahung_7tc_v2")
+        geolocator = Nominatim(user_agent="webgis_school_advisor_hoahung_7tc_v3")
         location = geolocator.geocode(address)
         if location:
             return location.latitude, location.longitude
@@ -183,7 +184,7 @@ for idx, row in df_work.iterrows():
         is_valid = False
         reject_reasons.append(f"Không thuộc loại hình {loai_hinh_pref}")
         
-    # 1.5 Lọc cứng: Điểm chuẩn trúng tuyển (Nếu điểm thi thiếu quá 2.0 điểm so với điểm chuẩn NV1)
+    # 1.5 Lọc cứng: Điểm chuẩn trúng tuyển
     E_i = row['Diem_Chuan_2026'] if pd.notnull(row['Diem_Chuan_2026']) else 15.0
     if diem_du_kien < E_i - 2.0:
         is_valid = False
@@ -196,7 +197,7 @@ df_work['Khoang_Cach_km'] = distances
 df_work['Dat_Dieu_Kien_Cung'] = passed_hard_filter
 df_work['Ly_Do_Loc'] = reasons_rejected
 
-# BƯỚC 2: TÍNH ĐIỂM MCDA/AHP CHO TẤT CẢ CÁC TRƯỜNG (CẢ TRƯỜNG ĐẠT VÀ KHÔNG ĐẠT ĐỂ SO SÁNH)
+# BƯỚC 2: TÍNH ĐIỂM MCDA/AHP
 scores = []
 for idx, row in df_work.iterrows():
     d_i = row['Khoang_Cach_km']
@@ -237,11 +238,9 @@ for idx, row in df_work.iterrows():
 df_work['Diem_S_i'] = scores
 
 # BƯỚC 3: XẾP HẠNG (RANKING)
-# Ưu tiên xếp hạng nhóm Đạt Điều Kiện Cứng trước, sau đó sắp xếp theo Điểm S_i giảm dần
 df_passed = df_work[df_work['Dat_Dieu_Kien_Cung'] == True].sort_values(by='Diem_S_i', ascending=False).reset_index(drop=True)
 df_rejected = df_work[df_work['Dat_Dieu_Kien_Cung'] == False].sort_values(by='Diem_S_i', ascending=False).reset_index(drop=True)
 
-# Gán thứ hạng Top 1, Top 2, Top 3 cho danh sách trường hợp lệ
 df_passed['Xep_Hang'] = "Khác"
 if len(df_passed) >= 1: df_passed.at[0, 'Xep_Hang'] = "Top 1"
 if len(df_passed) >= 2: df_passed.at[1, 'Xep_Hang'] = "Top 2"
@@ -249,22 +248,29 @@ if len(df_passed) >= 3: df_passed.at[2, 'Xep_Hang'] = "Top 3"
 
 df_rejected['Xep_Hang'] = "Không đạt điều kiện cứng"
 
-# Gộp hai bảng để hiển thị đầy đủ
 df_final = pd.concat([df_passed, df_rejected], ignore_index=True)
 
 # -----------------------------------------------------------------------------
 # 6. Giao diện Hiển thị Bản đồ & Bảng kết quả Đề xuất Top 3
 # -----------------------------------------------------------------------------
-col1, col2 = st.columns([1.1, 0.9])
+col1, col2 = st.columns([1.6, 1.0])
 
 with col1:
     st.subheader("🗺️ Bản đồ Không gian Trực quan Web-GIS")
+    st.caption("💡 *Mẹo: Bấm vào biểu tượng ⛶ (góc trên bên trái bản đồ) để phóng toàn màn hình.*")
     
-    # Thông báo trạng thái lọc 2 tầng
     st.info(f"💡 **Kết quả Lọc 2 Tầng:** Đã vượt qua vòng Lọc Cứng: **{len(df_passed)} / {len(df_work)} trường**. Loại bỏ **{len(df_rejected)} trường** vi phạm điều kiện bắt buộc.")
     
     # Tạo bản đồ Folium trung tâm tại nhà học sinh
     m = folium.Map(location=[lat_user, lon_user], zoom_start=14, tiles="OpenStreetMap")
+    
+    # Nút Phóng to Toàn Màn Hình
+    Fullscreen(
+        position="topleft",
+        title="Phóng toàn màn hình",
+        title_cancel="Thoát toàn màn hình",
+        force_separate_button=True
+    ).add_to(m)
     
     # Ghim vị trí nhà học sinh (Màu đỏ)
     folium.Marker(
@@ -316,11 +322,11 @@ with col1:
             popup=folium.Popup(popup_html, max_width=270)
         ).add_to(m)
         
-    # Render bản đồ vào Streamlit
-    st_folium(m, width=720, height=520)
+    # Render bản đồ vào Streamlit với chiều cao 680px
+    st_folium(m, height=680, use_container_width=True)
 
 with col2:
-    st.subheader("🏆 Kết Quả Đề Xuất Top 3 Tối Ưu (Sau Lọc Cứng)")
+    st.subheader("🏆 Kết Quả Đề Xuất Top 3 Tối Ưu")
     
     top_3 = df_passed[df_passed['Xep_Hang'].isin(["Top 1", "Top 2", "Top 3"])]
     
